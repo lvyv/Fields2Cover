@@ -58,6 +58,31 @@ int main() {
   f2c::Visualizer::plot(swaths);
   f2c::Visualizer::save("Tutorial_6_3_Reeds_Shepp.png");
 
+  std::vector<std::vector<double>> X(1), Y(1);
+  auto prev_state = path_reeds_shepp[0].type;
+  auto prev_dir = path_reeds_shepp[0].dir;
+  for (auto&& s : path_reeds_shepp) {
+    if (s.type==f2c::types::PathSectionType::SWATH) {
+      std::cout << "(" << s.point.getX() << "," << s.point.getY() << ")" << std::endl;
+    } else if (s.type==f2c::types::PathSectionType::TURN)
+    {
+      /* code */
+      std::cout << "(" << s.point.getX() << "," << s.point.getY() << ")" << std::endl;
+    }
+    
+    X.back().emplace_back(s.point.getX());
+    Y.back().emplace_back(s.point.getY());
+    X.back().emplace_back(s.atEnd().getX());
+    Y.back().emplace_back(s.atEnd().getY());
+    if (s.type != prev_state || s.dir != prev_dir) {
+      X.emplace_back();
+      Y.emplace_back();
+      prev_state = s.type;
+      prev_dir = s.dir;
+      std::cout << s.type << std::endl;
+    }
+  }
+  
   std::cout << "####### Tutorial 6.4 Reeds-Shepp curves with Continuous curvature ######" << std::endl;
   f2c::pp::ReedsSheppCurvesHC reeds_shepp_hc;
   F2CPath path_reeds_shepp_hc = path_planner.planPath(robot, swaths, reeds_shepp_hc);

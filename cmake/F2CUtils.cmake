@@ -31,14 +31,16 @@ function(f2c_declare_dependencies)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
         message(STATUS "Target architecture is AMD64")
         FetchContent_Declare(ortools FETCHCONTENT_UPDATES_DISCONNECTED
-          URL https://github.com/google/or-tools/releases/download/v9.9/or-tools_amd64_ubuntu-22.04_cpp_v9.9.3963.tar.gz
-          URL_HASH SHA256=a611133f4e9b75661c637347ebadff79539807cf8966eb9c176c2c560aad0a84
-        )
+	  #URL https://github.com/google/or-tools/releases/download/v9.9/or-tools_amd64_ubuntu-22.04_cpp_v9.9.3963.tar.gz
+	  #URL_HASH SHA256=a611133f4e9b75661c637347ebadff79539807cf8966eb9c176c2c560aad0a84
+          URL /home/lvyu/or-tools_amd64_ubuntu-22.04_cpp_v9.10.4067.tar.gz
+	)
       elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
         message(STATUS "Target architecture is ARM64")
         FetchContent_Declare(ortools FETCHCONTENT_UPDATES_DISCONNECTED
-          URL https://github.com/google/or-tools/releases/download/v9.9/or-tools_arm64_debian-11_cpp_v9.9.3963.tar.gz
-          URL_HASH SHA256=f308a06d89dce060f74e6fec4936b43f4bdf4874d18c131798697756200f4e7a
+	  #URL https://github.com/google/or-tools/releases/download/v9.9/or-tools_arm64_debian-11_cpp_v9.9.3963.tar.gz
+	  #URL_HASH SHA256=f308a06d89dce060f74e6fec4936b43f4bdf4874d18c131798697756200f4e7a
+          URL /home/lvyu/or-tools_amd64_ubuntu-22.04_cpp_v9.10.4067.tar.gz
         )
       else()
         message(FATAL_ERROR "Unknown/Unhandled target architecture: ${CMAKE_SYSTEM_PROCESSOR}")
@@ -81,17 +83,20 @@ function(f2c_declare_dependencies)
   endif()
 
   FetchContent_Declare(steering_functions FETCHCONTENT_UPDATES_DISCONNECTED
-    GIT_REPOSITORY https://github.com/Fields2Cover/steering_functions.git
-    GIT_TAG 13e3f5658144b3832fb1eb31a0e2f5a3cbf57db9
+    #GIT_REPOSITORY https://github.com/Fields2Cover/steering_functions.git 
+    #GIT_TAG 13e3f5658144b3832fb1eb31a0e2f5a3cbf57db9
+    URL /home/lvyu/steering_functions-13e3f5658144b3832fb1eb31a0e2f5a3cbf57db9.zip
   )
   FetchContent_Declare(matplot FETCHCONTENT_UPDATES_DISCONNECTED
-    GIT_REPOSITORY https://github.com/alandefreitas/matplotplusplus.git
-    GIT_TAG 5d01eb3695b07634a2b6642fd423740dea9b026c
+    #GIT_REPOSITORY https://github.com/alandefreitas/matplotplusplus.git
+    #GIT_TAG 5d01eb3695b07634a2b6642fd423740dea9b026c
+    URL /home/lvyu/matplotplusplus-5d01eb3695b07634a2b6642fd423740dea9b026c.zip
   )
 
   FetchContent_Declare(json FETCHCONTENT_UPDATES_DISCONNECTED
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG 4424a0fcc1c7fa640b5c87d26776d99150dacd10
+    #GIT_REPOSITORY https://github.com/nlohmann/json.git
+    #GIT_TAG 4424a0fcc1c7fa640b5c87d26776d99150dacd10
+    URL /home/lvyu/json-4424a0fcc1c7fa640b5c87d26776d99150dacd10.zip
   )
 
   FetchContent_MakeAvailable(steering_functions matplot json)

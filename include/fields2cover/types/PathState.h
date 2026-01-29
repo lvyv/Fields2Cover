@@ -24,6 +24,10 @@ enum class PathDirection {
   // STOP = 0,
 };
 
+// 在头文件中声明操作符重载
+std::ostream& operator<<(std::ostream& os, PathSectionType type);
+std::ostream& operator<<(std::ostream& os, PathDirection dir);
+
 struct PathState {
   Point point {0, 0, 0};
   double angle {0.0};

@@ -94,5 +94,37 @@ void Robot::setMaxDiffCurv(double dc) {
   this->linear_curv_change_ = fabs(dc);
 }
 
+double Robot::getMaxCurvLeft() const {
+  return this->max_curv_left_ ? *this->max_curv_left_ : this->max_icc_;
+}
+
+void Robot::setMaxCurvLeft(double c) {
+  this->max_curv_left_ = fabs(c);
+}
+
+double Robot::getMaxCurvRight() const {
+  return this->max_curv_right_ ? *this->max_curv_right_ : this->max_icc_;
+}
+
+void Robot::setMaxCurvRight(double c) {
+  this->max_curv_right_ = fabs(c);
+}
+
+double Robot::getMinTurningRadiusLeft() const {
+  return 1.0 / (getMaxCurvLeft() + 1e-7);
+}
+
+void Robot::setMinTurningRadiusLeft(double rad) {
+  this->max_curv_left_ = 1.0 / (fabs(rad) + 1e-7);
+}
+
+double Robot::getMinTurningRadiusRight() const {
+  return 1.0 / (getMaxCurvRight() + 1e-7);
+}
+
+void Robot::setMinTurningRadiusRight(double rad) {
+  this->max_curv_right_ = 1.0 / (fabs(rad) + 1e-7);
+}
+
 }  // namespace f2c::types
 

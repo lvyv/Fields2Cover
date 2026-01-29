@@ -57,6 +57,28 @@ struct Robot {
   double getMaxDiffCurv() const;
   void setMaxDiffCurv(double);
 
+  /// Get maximum curvature for left turns [1/m]
+  /// If not set, returns getMaxCurv()
+  double getMaxCurvLeft() const;
+  /// Set maximum curvature for left turns [1/m]
+  void setMaxCurvLeft(double);
+
+  /// Get maximum curvature for right turns [1/m]
+  /// If not set, returns getMaxCurv()
+  double getMaxCurvRight() const;
+  /// Set maximum curvature for right turns [1/m]
+  void setMaxCurvRight(double);
+
+  /// Get minimum turning radius for left turns [m]
+  double getMinTurningRadiusLeft() const;
+  /// Set minimum turning radius for left turns [m]
+  void setMinTurningRadiusLeft(double rad);
+
+  /// Get minimum turning radius for right turns [m]
+  double getMinTurningRadiusRight() const;
+  /// Set minimum turning radius for right turns [m]
+  void setMinTurningRadiusRight(double rad);
+
  private:
   std::string name_;
 
@@ -76,6 +98,11 @@ struct Robot {
 
   /// Velocity of the robot when doing turns. If not set, cruise_speed_ is used
   std::optional<double> turn_vel_;
+
+  /// Maximum curvature for left turns [1/m]. If not set, max_icc_ is used.
+  std::optional<double> max_curv_left_;
+  /// Maximum curvature for right turns [1/m]. If not set, max_icc_ is used.
+  std::optional<double> max_curv_right_;
 };
 
 }  // namespace f2c::types

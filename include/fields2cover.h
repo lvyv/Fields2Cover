@@ -64,6 +64,7 @@
 #include "fields2cover/path_planning/dubins_curves_cc.h"
 #include "fields2cover/path_planning/reeds_shepp_curves.h"
 #include "fields2cover/path_planning/reeds_shepp_curves_hc.h"
+#include "fields2cover/path_planning/reeds_shepp_curves_asym.h"
 #include "fields2cover/path_planning/path_planning.h"
 
 
@@ -112,6 +113,7 @@ enum class PPAlg {
   DUBINS_CC = 1,
   REEDS_SHEPP = 2,
   REEDS_SHEPP_HC = 3,
+  REEDS_SHEPP_ASYM = 4,  // Asymmetric turning radii
 };
 
 

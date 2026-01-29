@@ -70,6 +70,9 @@ std::unique_ptr<f2c::pp::TurningBase> getPPTurningBasePtr(const Options& opt) {
     case PPAlg::REEDS_SHEPP_HC:
       turn_planner = std::make_unique<f2c::pp::ReedsSheppCurvesHC>();
       break;
+    case PPAlg::REEDS_SHEPP_ASYM:
+      turn_planner = std::make_unique<f2c::pp::ReedsSheppCurvesAsym>();
+      break;
   }
   return turn_planner;
 }
