@@ -149,6 +149,8 @@ struct Options {
   RPAlg rp_alg {RPAlg::SHORTEST_ROUTE};
 
   PPAlg pp_alg {PPAlg::DUBINS};
+
+  double path_discretization_step {0.2};
 };
 
 F2CRoute planCovRoute(const F2CRobot& robot, const F2CCell& cell,

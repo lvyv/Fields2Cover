@@ -20,12 +20,12 @@ class PathPlanning {
  public:
   /// Compute the coverage path using a route as a reference.
   static F2CPath planPath(const F2CRobot& robot, const F2CRoute& route,
-      TurningBase& turn);
+      TurningBase& turn, double discretization_step = 0.2);
 
   /// Compute path that covers the swaths in order,
   /// using a path planner to connect swaths.
   static F2CPath planPath(const F2CRobot& robot, const F2CSwaths& swaths,
-      TurningBase& turn);
+      TurningBase& turn, double discretization_step = 0.2);
 
   /// Compute path that goes from the end of the last swath in a F2CSwaths
   /// to the beginning of the first one in another F2CSwaths.

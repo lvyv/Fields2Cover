@@ -10,13 +10,13 @@
 namespace f2c::pp {
 
 F2CPath PathPlanning::planPath(const F2CRobot& robot,
-    const F2CRoute& route, TurningBase& turn) {
+    const F2CRoute& route, TurningBase& turn, double discretization_step) {
   F2CPath path;
   for (size_t i = 0; i < route.sizeVectorSwaths(); ++i) {
     auto prev_swaths = (i >0) ? route.getSwaths(i-1) : F2CSwaths();
     path += planPathForConnection(robot,
         prev_swaths, route.getConnection(i), route.getSwaths(i), turn);
-    path += planPath(robot, route.getSwaths(i), turn);
+    path += planPath(robot, route.getSwaths(i), turn, discretization_step);
   }
   if (route.sizeConnections() > route.sizeVectorSwaths()) {
     path += planPathForConnection(robot,
@@ -26,7 +26,7 @@ F2CPath PathPlanning::planPath(const F2CRobot& robot,
 }
 
 F2CPath PathPlanning::planPath(const F2CRobot& robot,
-    const F2CSwaths& swaths, TurningBase& turn) {
+    const F2CSwaths& swaths, TurningBase& turn, double discretization_step) {
   F2CPath path;
   if (swaths.size() > 1) {
     for (size_t i = 0; i < swaths.size()-1; ++i) {
@@ -34,7 +34,7 @@ F2CPath PathPlanning::planPath(const F2CRobot& robot,
       F2CPath turn_path = turn.createTurn(robot,
           swaths[i].endPoint(), swaths[i].getOutAngle(),
           swaths[i + 1].startPoint(), swaths[i + 1].getInAngle());
-      path += turn_path.discretize(0.1);
+      path += turn_path.discretize(discretization_step);
     }
   }
   if (swaths.size() > 0) {

@@ -139,13 +139,15 @@ F2CRoute planCovRoute(const F2CRobot& robot, const F2CField& field,
 F2CPath planCovPath(const F2CRobot& robot, const F2CCell& cell,
     const Options& opt) {
   return f2c::pp::PathPlanning::planPath(
-      robot, planCovRoute(robot, cell, opt), *getPPTurningBasePtr(opt));
+      robot, planCovRoute(robot, cell, opt), *getPPTurningBasePtr(opt), 
+      opt.path_discretization_step);
 }
 
 F2CPath planCovPath(const F2CRobot& robot, const F2CCells& cells,
     const Options& opt) {
   return f2c::pp::PathPlanning::planPath(
-      robot, planCovRoute(robot, cells, opt), *getPPTurningBasePtr(opt));
+      robot, planCovRoute(robot, cells, opt), *getPPTurningBasePtr(opt),
+      opt.path_discretization_step);
 }
 
 F2CPath planCovPath(const F2CRobot& robot, const F2CField& field,
@@ -162,7 +164,7 @@ F2CPath planCovPath(const F2CRobot& robot, const F2CField& field,
   }
   F2CPath path = f2c::pp::PathPlanning::planPath(
       robot, planCovRoute(robot, field_c.getField(), opt),
-      *getPPTurningBasePtr(opt));
+      *getPPTurningBasePtr(opt), opt.path_discretization_step);
   return local_crs ? path : f2c::Transform::transformToPrevCRS(path, field_c);
 }
 
