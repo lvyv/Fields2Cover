@@ -79,6 +79,12 @@ struct Robot {
   /// Set minimum turning radius for right turns [m]
   void setMinTurningRadiusRight(double rad);
 
+  /// Get the hitch offset distance [m]
+  /// Distance from vehicle center to implement (positive = implement is behind)
+  double getHitchOffset() const;
+  /// Set the hitch offset distance [m]
+  void setHitchOffset(double offset);
+
  private:
   std::string name_;
 
@@ -86,6 +92,9 @@ struct Robot {
   double width_ {0.0};
   /// Width of the coverage area of the robot
   double cov_width_ {0.0};
+
+  /// Distance from vehicle center to implement (positive = implement is behind) [m]
+  double hitch_offset_ {0.0};
 
   /// Velocity of the robot when not doing turns.
   double cruise_speed_ {1.0};

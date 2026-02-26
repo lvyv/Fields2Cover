@@ -27,19 +27,71 @@ F2CPath PathPlanning::planPath(const F2CRobot& robot,
 
 F2CPath PathPlanning::planPath(const F2CRobot& robot,
     const F2CSwaths& swaths, TurningBase& turn, double discretization_step) {
+  // D1: 农具(犁具)相对机体中心的后向距离。
+  // - 用户外部传入：robot.setHitchOffset(D1)
+  // - 用户不传(默认 0)：保持原始行为，不做补偿
+  const double D1 = robot.getHitchOffset();
+
   F2CPath path;
   if (swaths.size() > 1) {
     for (size_t i = 0; i < swaths.size()-1; ++i) {
+      // 1) 当前耕作直线路径(swath)
       path.appendSwath(swaths[i], robot.getCruiseVel());
+
+      // 2) 地头补偿：前进 D1 继续作业，抬犁倒退 D1 回到地头点
+      // 目的：避免“机体中心到达地头就转弯”导致犁具末端 D1 漏耕。
+      if (D1 > 1e-6) {
+        const double ang_out = swaths[i].getOutAngle();
+        const F2CPoint p_end = swaths[i].endPoint();
+        const F2CPoint p_ext(
+          p_end.getX() + D1 * cos(ang_out),
+          p_end.getY() + D1 * sin(ang_out));
+
+        // (2.1) 前进 D1：仍然是作业段(SWATH)
+        path.addState(p_end, ang_out, D1,
+          f2c::types::PathDirection::FORWARD,
+          f2c::types::PathSectionType::SWATH,
+          robot.getCruiseVel());
+
+        // (2.2) 抬犁倒退 D1：非作业段，用 TURN 类型标记
+        path.addState(p_ext, ang_out, D1,
+          f2c::types::PathDirection::BACKWARD,
+          f2c::types::PathSectionType::TURN,
+          robot.getTurnVel());
+      }
+
+      // 3) 转弯段：从 swath[i] 末端连接到下一条 swath 的起点
+      // 注意：上面补偿结束后机体回到了原 swath.endPoint()，因此这里仍然用 endPoint()。
       F2CPath turn_path = turn.createTurn(robot,
           swaths[i].endPoint(), swaths[i].getOutAngle(),
           swaths[i + 1].startPoint(), swaths[i + 1].getInAngle());
       path += turn_path.discretize(discretization_step);
     }
   }
+
   if (swaths.size() > 0) {
+    // 最后一条 swath：同样追加补偿，否则最后一条末端仍可能漏耕
     path.appendSwath(swaths.back(), robot.getCruiseVel());
+
+    if (D1 > 1e-6) {
+      const double ang_out = swaths.back().getOutAngle();
+      const F2CPoint p_end = swaths.back().endPoint();
+      const F2CPoint p_ext(
+        p_end.getX() + D1 * cos(ang_out),
+        p_end.getY() + D1 * sin(ang_out));
+
+      path.addState(p_end, ang_out, D1,
+        f2c::types::PathDirection::FORWARD,
+        f2c::types::PathSectionType::SWATH,
+        robot.getCruiseVel());
+
+      path.addState(p_ext, ang_out, D1,
+        f2c::types::PathDirection::BACKWARD,
+        f2c::types::PathSectionType::TURN,
+        robot.getTurnVel());
+    }
   }
+
   return path;
 }
 
@@ -158,4 +210,3 @@ std::vector<std::pair<F2CPoint, double>> PathPlanning::simplifyConnection(
 }
 
 }  // namespace f2c::pp
-

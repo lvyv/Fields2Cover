@@ -35,3 +35,5 @@ target_link_libraries(quick_start PUBLIC Fields2Cover)
 add_executable(test_asym_turning test_asym_turning.cpp)
 target_link_libraries(test_asym_turning PUBLIC Fields2Cover)
 
+add_executable(test_hitch_compensation test_hitch_compensation.cpp)
+target_link_libraries(test_hitch_compensation PUBLIC Fields2Cover)

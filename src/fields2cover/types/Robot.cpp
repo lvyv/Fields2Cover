@@ -126,5 +126,12 @@ void Robot::setMinTurningRadiusRight(double rad) {
   this->max_curv_right_ = 1.0 / (fabs(rad) + 1e-7);
 }
 
-}  // namespace f2c::types
+double Robot::getHitchOffset() const {
+  return this->hitch_offset_;
+}
 
+void Robot::setHitchOffset(double offset) {
+  this->hitch_offset_ = offset;
+}
+
+}  // namespace f2c::types
