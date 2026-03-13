@@ -134,4 +134,20 @@ void Robot::setHitchOffset(double offset) {
   this->hitch_offset_ = offset;
 }
 
+double Robot::getHitchStraightenDistRight() const {
+  return this->hitch_straighten_dist_right_;
+}
+
+void Robot::setHitchStraightenDistRight(double dist) {
+  this->hitch_straighten_dist_right_ = dist;
+}
+
+double Robot::getHitchStraightenDistLeft() const {
+  return this->hitch_straighten_dist_left_;
+}
+
+void Robot::setHitchStraightenDistLeft(double dist) {
+  this->hitch_straighten_dist_left_ = dist;
+}
+
 }  // namespace f2c::types

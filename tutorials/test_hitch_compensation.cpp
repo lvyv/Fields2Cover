@@ -99,9 +99,9 @@ void printPathStatesSummary(const F2CPath& path, const std::string& label) {
 
 int main(int argc, char** argv) {
   // Usage:
-  //   ./test_hitch_compensation <D1> <mode> <turn_model>
+  //   ./test_hitch_compensation <D1> <mode> <turn_model> [D2] [D3]
   // Example:
-  //   ./test_hitch_compensation 5 boustrophedon rs
+  //   ./test_hitch_compensation 5 boustrophedon rs 3 3.1
   double D1 = 5.0;
   if (argc > 1) {
     D1 = std::stod(argv[1]);
@@ -119,6 +119,15 @@ int main(int argc, char** argv) {
   }
   turn_model = normalizeMode(turn_model);
 
+  double D2 = 0.0;
+  if (argc > 4) {
+    D2 = std::stod(argv[4]);
+  }
+  double D3 = 0.0;
+  if (argc > 5) {
+    D3 = std::stod(argv[5]);
+  }
+
   if (turn_model != "dubins" && turn_model != "rs" && turn_model != "reeds_shepp") {
     throw std::invalid_argument(
         "Unsupported turn model: " + turn_model +
@@ -127,6 +136,8 @@ int main(int argc, char** argv) {
 
   std::cout << "=== Test: Hitch Compensation with Full Field ===" << std::endl;
   std::cout << "Using D1 (hitch offset) = " << D1 << " m" << std::endl;
+  std::cout << "Using D2 (straighten before RIGHT turn) = " << D2 << " m" << std::endl;
+  std::cout << "Using D3 (straighten before LEFT turn) = " << D3 << " m" << std::endl;
   std::cout << "Route mode = " << mode << std::endl;
   std::cout << "Turn model = " << turn_model << std::endl;
   std::cout << "PathState meaning (from PathState.h):" << std::endl;
@@ -151,6 +162,8 @@ int main(int argc, char** argv) {
 
   F2CRobot robot_hitch = robot_base;
   robot_hitch.setHitchOffset(D1);
+  robot_hitch.setHitchStraightenDistRight(D2);
+  robot_hitch.setHitchStraightenDistLeft(D3);
 
   // Standard flow used by the project tutorials
   f2c::hg::ConstHL const_hl;

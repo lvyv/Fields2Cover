@@ -318,6 +318,17 @@ Path Path::discretizeSwath(double step_size) const {
       new_path.addState(s);
     }
   }
+  // Ensure numerical continuity between consecutive states.
+  // Some generated paths can accumulate tiny floating errors so that the end of
+  // one state is not exactly the start of the next one.
+  if (new_path.size() > 1) {
+    for (size_t i = 0; i + 1 < new_path.size(); ++i) {
+      Point p_end = new_path[i].atEnd();
+      if (p_end.distance(new_path[i + 1].point) < 1e-2) {
+        new_path[i + 1].point = p_end;
+      }
+    }
+  }
   return new_path;
 }
 

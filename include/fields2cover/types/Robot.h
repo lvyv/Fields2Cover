@@ -85,6 +85,18 @@ struct Robot {
   /// Set the hitch offset distance [m]
   void setHitchOffset(double offset);
 
+  /// Get pull-ahead distance to straighten implement before a RIGHT turn [m]
+  /// This is an extra forward motion used for hitch/implement alignment.
+  double getHitchStraightenDistRight() const;
+  /// Set pull-ahead distance to straighten implement before a RIGHT turn [m]
+  void setHitchStraightenDistRight(double dist);
+
+  /// Get pull-ahead distance to straighten implement before a LEFT turn [m]
+  /// This is an extra forward motion used for hitch/implement alignment.
+  double getHitchStraightenDistLeft() const;
+  /// Set pull-ahead distance to straighten implement before a LEFT turn [m]
+  void setHitchStraightenDistLeft(double dist);
+
  private:
   std::string name_;
 
@@ -95,6 +107,11 @@ struct Robot {
 
   /// Distance from vehicle center to implement (positive = implement is behind) [m]
   double hitch_offset_ {0.0};
+
+  /// Extra forward distance before turning to straighten implement [m]
+  /// Right/Left can be different depending on kinematics.
+  double hitch_straighten_dist_right_ {0.0};
+  double hitch_straighten_dist_left_ {0.0};
 
   /// Velocity of the robot when not doing turns.
   double cruise_speed_ {1.0};

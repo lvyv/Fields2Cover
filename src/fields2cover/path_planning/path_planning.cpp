@@ -31,6 +31,15 @@ F2CPath PathPlanning::planPath(const F2CRobot& robot,
   // - 用户外部传入：robot.setHitchOffset(D1)
   // - 用户不传(默认 0)：保持原始行为，不做补偿
   const double D1 = robot.getHitchOffset();
+  // D2/D3: 转弯前“前进回正 + 倒退回到转弯点”的距离。
+  // - D2：右转时使用（顺时针）
+  // - D3：左转时使用（逆时针）
+  // - 用户外部传入：
+  //     robot.setHitchStraightenDistRight(D2)
+  //     robot.setHitchStraightenDistLeft(D3)
+  // - 用户不传(默认 0)：保持原始行为，不做补偿
+  const double D2 = robot.getHitchStraightenDistRight();
+  const double D3 = robot.getHitchStraightenDistLeft();
 
   F2CPath path;
   if (swaths.size() > 1) {
@@ -65,7 +74,68 @@ F2CPath PathPlanning::planPath(const F2CRobot& robot,
       F2CPath turn_path = turn.createTurn(robot,
           swaths[i].endPoint(), swaths[i].getOutAngle(),
           swaths[i + 1].startPoint(), swaths[i + 1].getInAngle());
-      path += turn_path.discretize(discretization_step);
+      turn_path.discretize(discretization_step);
+
+      // 2.5) 转弯到 H 点后再做 D2/D3 前进+回退：
+      // H 点近似为转弯轨迹上偏离首尾连线最远的点（圆弧最高点），
+      // 不需要用户传入 H，只根据 turn_path 自动计算。
+      {
+        const double ang_out = swaths[i].getOutAngle();
+        const double ang_in_next = swaths[i + 1].getInAngle();
+        const double delta = atan2(sin(ang_in_next - ang_out), cos(ang_in_next - ang_out));
+        const bool is_right_turn = (delta < 0.0);
+        const double D = is_right_turn ? D2 : D3;
+
+        if (D > 1e-6 && turn_path.size() > 0) {
+          const F2CPoint p_start = swaths[i].endPoint();
+          const F2CPoint p_end_next = swaths[i + 1].startPoint();
+
+          // 找到离首尾连线最远的点，视为 H。
+          size_t idx_h = 0;
+          double max_dist = -1.0;
+          for (size_t k = 0; k < turn_path.size(); ++k) {
+            double d = fabs(turn_path[k].point.signedDistance2Segment(p_start, p_end_next));
+            if (d > max_dist) {
+              max_dist = d;
+              idx_h = k;
+            }
+          }
+
+          const F2CPoint H = turn_path[idx_h].point;
+          const double ang_H = turn_path[idx_h].angle;
+          // 在 H 点沿转弯轨迹切线方向前进 D，再回退 D（与圆相切）
+          const double ang_tangent = ang_H;
+          const F2CPoint p_fwd(
+            H.getX() + D * cos(ang_tangent),
+            H.getY() + D * sin(ang_tangent));
+
+          F2CPath new_turn;
+          // 先保留转弯到 H 的轨迹
+          for (size_t k = 0; k <= idx_h; ++k) {
+            new_turn.addState(turn_path[k]);
+          }
+          // 在 H 点前进 D（抬犁）
+          new_turn.addState(H, ang_tangent, D,
+            f2c::types::PathDirection::FORWARD,
+            f2c::types::PathSectionType::TURN,
+            robot.getTurnVel());
+          // 再从 I 点回退 D 回到 H 点
+          new_turn.addState(p_fwd, ang_tangent, D,
+            f2c::types::PathDirection::BACKWARD,
+            f2c::types::PathSectionType::TURN,
+            robot.getTurnVel());
+          // 继续从 H 之后的原始转弯轨迹
+          for (size_t k = idx_h + 1; k < turn_path.size(); ++k) {
+            new_turn.addState(turn_path[k]);
+          }
+
+          turn_path = std::move(new_turn);
+        }
+      }
+
+      // 转弯过程中抬犁：转弯段统一标记为 TURN
+      turn_path.setTurnType();
+      path += turn_path;
     }
   }
 
@@ -134,9 +204,12 @@ F2CPath PathPlanning::planPathForConnection(const F2CRobot& robot,
 
   F2CPath path;
   for (int i = 1; i < v_con.size(); ++i) {
-    path += turn.createTurn(robot,
+    auto t = turn.createTurn(robot,
         v_con[i-1].first, v_con[i-1].second,
         v_con[i].first, v_con[i].second);
+    // 连接段同样属于转弯/机动：抬犁
+    t.setTurnType();
+    path += t;
   }
   return path;
 }

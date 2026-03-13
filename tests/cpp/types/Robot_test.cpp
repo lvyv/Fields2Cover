@@ -40,6 +40,14 @@ TEST(fields2cover_types_robot, init) {
   robot.setTurnVel(5.0);
   EXPECT_NEAR(robot.getTurnVel(),            5.0, 1e-5);
 
+  robot.setHitchOffset(3.2);
+  EXPECT_NEAR(robot.getHitchOffset(),        3.2, 1e-5);
+
+  robot.setHitchStraightenDistRight(1.5);
+  robot.setHitchStraightenDistLeft(2.5);
+  EXPECT_NEAR(robot.getHitchStraightenDistRight(), 1.5, 1e-5);
+  EXPECT_NEAR(robot.getHitchStraightenDistLeft(),  2.5, 1e-5);
+
 
   EXPECT_THROW(F2CRobot(0), std::out_of_range);
   EXPECT_THROW(F2CRobot(-3), std::out_of_range);
