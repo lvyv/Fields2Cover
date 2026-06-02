@@ -41,7 +41,6 @@ docs/api
 
 
 authorized_keys
-cmake_install.cmake
 
 # Vim backup files
 [._]*.s[a-v][a-z]
